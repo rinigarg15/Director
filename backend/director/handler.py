@@ -3,6 +3,7 @@ import logging
 
 from director.agents.thumbnail import ThumbnailAgent
 from director.agents.summarize_video import SummarizeVideoAgent
+from director.agents.index_collection import IndexCollectionAgent
 from director.agents.download import DownloadAgent
 from director.agents.pricing import PricingAgent
 from director.agents.upload import UploadAgent
@@ -22,8 +23,7 @@ from director.agents.dubbing import DubbingAgent
 from director.agents.text_to_movie import TextToMovieAgent
 from director.agents.meme_maker import MemeMakerAgent
 from director.agents.composio import ComposioAgent
-
-
+from director.agents.gurudev import GurudevAgent
 from director.core.session import Session, InputMessage, MsgStatus
 from director.core.reasoning import ReasoningEngine
 from director.db.base import BaseDB
@@ -60,6 +60,8 @@ class ChatHandler:
             TextToMovieAgent,
             MemeMakerAgent,
             ComposioAgent,
+            GurudevAgent,
+            IndexCollectionAgent,
         ]
 
     def add_videodb_state(self, session):
