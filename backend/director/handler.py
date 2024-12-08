@@ -39,27 +39,6 @@ class ChatHandler:
 
         # Register the agents here
         self.agents = [
-            ThumbnailAgent,
-            SummarizeVideoAgent,
-            DownloadAgent,
-            PricingAgent,
-            UploadAgent,
-            SearchAgent,
-            PromptClipAgent,
-            IndexAgent,
-            BrandkitAgent,
-            ProfanityRemoverAgent,
-            ImageGenerationAgent,
-            AudioGenerationAgent,
-            VideoGenerationAgent,
-            StreamVideoAgent,
-            SubtitleAgent,
-            SlackAgent,
-            EditingAgent,
-            DubbingAgent,
-            TextToMovieAgent,
-            MemeMakerAgent,
-            ComposioAgent,
             GurudevAgent,
             IndexCollectionAgent,
         ]
