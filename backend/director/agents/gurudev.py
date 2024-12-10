@@ -1,4 +1,7 @@
 import logging
+import re
+import json
+from math import floor
 
 from director.tools.videodb_tool import VideoDBTool
 from director.agents.base import BaseAgent, AgentResponse, AgentStatus
@@ -26,6 +29,46 @@ class GurudevAgent(BaseAgent):
         self.llm = OpenAI()
         self.parameters = self.get_parameters()
         super().__init__(session=session, **kwargs)
+
+
+    def ranking_prompt_llm(self, text, prompt):
+        ranking_prompt = """Given the text provided below and a specific User Prompt, evaluate the relevance of the text
+        in relation to the user's prompt. Please assign a relevance score ranging from 0 to 10, where 0 indicates no relevance 
+        and 10 signifies perfect alignment with the user's request.
+        The score quality also increases when the text is a complete senetence, making it perfect for a video clip result"""
+
+        ranking_prompt += f"""
+        text: {text}
+        User Prompt: {prompt}
+        """
+
+        ranking_prompt += """
+        Ensure the final output strictly adheres to the JSON format specified, without including additional text or explanations. 
+        Use the following structure for your response:
+        {
+        "score": <relevance score>
+        }
+        """
+        try:
+            response = self.llm.chat(message=ranking_prompt)
+            print(response)
+            output = response["choices"][0]["message"]["content"]
+            res = json.loads(output)
+            score = res.get('score')
+            return score
+        except Exception as e:
+            return 0 
+
+    def rank_results(self, res, prompt, score_percentage=0.30):
+        """
+        rank and give score to each result
+        """
+        res_score = []
+        for text in res:
+            res_score.append((text, self.ranking_prompt_llm(text,prompt)))
+        
+        res_score_sorted = sorted(res_score, key=lambda x: x[1], reverse=True)
+        return res_score_sorted[0: floor(len(res_score_sorted)*score_percentage)]
 
     def run(
         self, query: str, *args, **kwargs
@@ -68,9 +111,9 @@ class GurudevAgent(BaseAgent):
             videodb_tool = VideoDBTool(collection_id="c-3c2c6a83-2689-4269-ad81-508b74bf3558")
 
             search_results = videodb_tool.semantic_search(query)
-            shots = search_results.get_shots()
+            shots_received = search_results.get_shots()
 
-            if not shots:
+            if not shots_received:
                 search_result_content.status = MsgStatus.error
                 search_result_content.status_message = "Failed to get search results."
                 compilation_content.status = MsgStatus.error
@@ -89,6 +132,14 @@ class GurudevAgent(BaseAgent):
                     },
                 )
             
+            res_score = []
+            score_percentage=0.50
+            for shot in shots_received:
+                res_score.append((shot, self.ranking_prompt_llm(shot["text"], query)))
+            
+            res_score_sorted = sorted(res_score, key=lambda x: x[1], reverse=True)
+            shots = [res_score[0] for res_score in res_score_sorted[0: floor(len(res_score_sorted)*score_percentage)]]
+
             search_result_videos = {}
 
             for shot in shots:

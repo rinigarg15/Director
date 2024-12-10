@@ -30,6 +30,30 @@ onUnmounted(() => {
         httpUrl: `${BACKEND_URL}`,
         debug: true,
       }"
+      :sidebar-config="{
+        links: [],
+      }"
+      :default-screen-config="{
+        actionCardQueries: [
+          {
+            content: 'What are the pre-built agents I can use right now?',
+            type: 'primary',
+            action: 'chat',
+          },
+        ],
+        demoVideos: [
+          {
+            id: 1,
+            externalUrl: true,
+            url: 'https://www.youtube.com/watch?v=Dncn_0RWrro',
+            thumbnail_url:
+              'https://raw.githubusercontent.com/video-db/videodb-cookbook-assets/main/images/thumbnail_automated.png',
+          },
+        ],
+      }"
+      :header-config="{
+        uploadButton: false,
+      }"
     />
   </main>
 </template>

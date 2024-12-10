@@ -39,8 +39,9 @@ class ChatHandler:
 
         # Register the agents here
         self.agents = [
+            SummarizeVideoAgent,
+            StreamVideoAgent,
             GurudevAgent,
-            IndexCollectionAgent,
         ]
 
     def add_videodb_state(self, session):
