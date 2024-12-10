@@ -133,7 +133,7 @@ class GurudevAgent(BaseAgent):
                 )
             
             res_score = []
-            score_percentage=0.50
+            score_percentage=0.80
             for shot in shots_received:
                 res_score.append((shot, self.ranking_prompt_llm(shot["text"], query)))
             
